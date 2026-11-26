@@ -34,7 +34,7 @@ function parseFrontMatter(markdown) {
   return { title, slug, body: match ? markdown.slice(match[0].length) : markdown };
 }
 
-function firstParagraph(body) {
+function firstParagraph(body, term) {
   const paragraphs = body.split(/\r?\n\s*\r?\n/);
   for (const paragraph of paragraphs) {
     const lines = paragraph.split(/\r?\n/).map(line => line.trim());
@@ -48,7 +48,8 @@ function firstParagraph(body) {
     if (!meaningful.length) continue;
     const raw = meaningful.join(" ");
     if (/^\{\{\s*[A-Za-z]+\s*\}\}$/.test(raw)) continue;
-    return cleanMarkdown(raw);
+    const boldTerm = new RegExp("\\*\\*" + escapeRegExp(term) + "\\*\\*", "g");
+    return cleanMarkdown(raw.replace(boldTerm, "これは"));
   }
   return "";
 }
@@ -66,7 +67,7 @@ for (const dirent of fs.readdirSync(root, { withFileTypes: true })) {
   const translated = titleMatch && ja.test(titleMatch[2]);
   const term = translated ? titleMatch[2].trim() : title;
   const original = translated ? titleMatch[1].trim() : title;
-  const definition = firstParagraph(body);
+  const definition = firstParagraph(body, term);
   if (!definition) continue;
 
   const leadingTerm = new RegExp("^" + escapeRegExp(term) + "(?=\\s*(?:とは|は|というのは|:|：))");
