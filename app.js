@@ -38,7 +38,7 @@ function render() {
     const isFront = !state.flipped;
     const showDefinition = state.mode === "definition" ? isFront : !isFront;
     $("card-label").textContent = showDefinition ? "DEFINITION" : "TERM";
-    $("card-content").textContent = showDefinition ? state.current.definition : state.current.term;
+    $("card-content").textContent = showDefinition ? state.current.definition : (state.current.term === state.current.original ? state.current.term : state.current.term + " / " + state.current.original);
     $("flip-hint").textContent = isFront ? "タップして答えを見る" : "タップして表に戻る";
     $("counter").textContent = `${state.pending.length} TERMS LEFT`;
     $("direction").textContent = state.mode === "definition" ? "説明 → 用語" : "用語 → 説明";
