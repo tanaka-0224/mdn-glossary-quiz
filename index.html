@@ -86,7 +86,18 @@
       }
 
       try {
-        await navigator.serviceWorker.register("./sw.js");
+        const registration = await navigator.serviceWorker.register("./sw.js");
+        if (registration.installing) {
+          await new Promise((resolve, reject) => {
+            const worker = registration.installing;
+            const checkState = () => {
+              if (worker.state === "activated") resolve();
+              if (worker.state === "redundant") reject(new Error("Service Worker installation failed"));
+            };
+            worker.addEventListener("statechange", checkState);
+            checkState();
+          });
+        }
         await navigator.serviceWorker.ready;
 
         const cache = await caches.open("mdn-glossary-cards-v2");
