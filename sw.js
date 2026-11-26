@@ -1,4 +1,4 @@
-const CACHE_NAME = "mdn-glossary-cards-v2";
+const CACHE_NAME = "mdn-glossary-cards-v3";
 const APP_SHELL = [
   "./index.html",
   "./styles.css",
@@ -29,19 +29,17 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith((async () => {
-    const cached = await caches.match(event.request);
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(event.request);
     if (cached) return cached;
 
     try {
       const response = await fetch(event.request);
-      if (response.ok) {
-        const cache = await caches.open(CACHE_NAME);
-        await cache.put(event.request, response.clone());
-      }
+      if (response.ok) await cache.put(event.request, response.clone());
       return response;
     } catch {
       if (event.request.mode === "navigate") {
-        const fallback = await caches.match(new URL("./index.html", self.location.href));
+        const fallback = await cache.match(new URL("./index.html", self.location.href));
         if (fallback) return fallback;
       }
       return new Response("このページはオフライン保存されていません。オンラインで再度開いてください。", {
