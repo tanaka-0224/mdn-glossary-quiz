@@ -61,6 +61,7 @@
       </details>
     </section>
     <footer>
+      <p id="offline-status" role="status" aria-live="polite">オフライン利用の準備状況を確認しています…</p>
       <p>用語・定義の出典: <a href="https://developer.mozilla.org/en-US/docs/Glossary" target="_blank" rel="noreferrer">MDN Web Docs Glossary</a></p>
       <p>MDNの内容は各ページのライセンスに従います。<a href="./THIRD_PARTY_LICENSES.md">ライセンス情報</a></p>
     </footer>
@@ -69,14 +70,61 @@
     <form method="dialog">
       <h2>学習設定</h2>
       <p>「説明から」「用語から」を切り替えて、同じ用語を両方向から練習できます。</p>
+      <p>オフラインで使うには、オンライン中に一度アプリを開いて保存を完了してください。iPhoneではSafariの共有メニューから「ホーム画面に追加」し、「Webアプリとして開く」を有効にする方法を推奨します。</p>
       <button class="action primary" value="close">閉じる</button>
     </form>
   </dialog>
   <script src="./app.js" type="module"></script>
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(error => console.error("Service Worker registration failed:", error)));
-    }
+    window.addEventListener("load", async () => {
+      const status = document.getElementById("offline-status");
+      const setStatus = (message) => { if (status) status.textContent = message; };
+
+      if (!("serviceWorker" in navigator) || !("caches" in window)) {
+        setStatus("オフライン利用: このブラウザでは対応していません。");
+        return;
+      }
+
+      try {
+        await navigator.serviceWorker.register("./sw.js");
+        await navigator.serviceWorker.ready;
+
+        const cache = await caches.open("mdn-glossary-cards-v2");
+        const requiredFiles = [
+          "./index.html",
+          "./styles.css",
+          "./app.js",
+          "./data/glossary.js",
+          "./manifest.webmanifest"
+        ];
+        const missingFiles = await Promise.all(requiredFiles.map(async path =>
+          !(await cache.match(new URL(path, location.href)))
+        ));
+
+        if (missingFiles.some(Boolean)) {
+          setStatus("オフライン利用: 保存が完了していません。オンライン接続中にページを再読み込みしてください。");
+          return;
+        }
+
+        let storageMessage = "端末による保存データの自動削除を防げるか確認できません。";
+        if (navigator.storage?.persisted && navigator.storage?.persist) {
+          try {
+            let persisted = await navigator.storage.persisted();
+            if (!persisted) persisted = await navigator.storage.persist();
+            storageMessage = persisted
+              ? "端末の自動削除から保護する設定が有効です。"
+              : "保存済みですが、ブラウザやOSが保存データを削除する可能性があります。";
+          } catch {
+            storageMessage = "保存済みですが、長期保存の保護状態を確認できません。";
+          }
+        }
+
+        setStatus("オフライン利用: 必要なファイルは保存済みです。" + storageMessage);
+      } catch (error) {
+        console.error("Offline setup failed:", error);
+        setStatus("オフライン利用: 保存に失敗しました。オンライン接続を確認して再読み込みしてください。");
+      }
+    });
   </script>
 </body>
 </html>
