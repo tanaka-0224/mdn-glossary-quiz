@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8fa">
+  <title>MDN Glossary Cards</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <a class="brand" href="./">MDN <span>Glossary Cards</span></a>
+      <button id="settings-button" class="icon-button" type="button" aria-label="設定">設定</button>
+    </header>
+    <section class="intro">
+      <p class="eyebrow">WEB DEVELOPMENT VOCABULARY</p>
+      <h1>用語を、覚える。</h1>
+      <p class="sub">MDN Web Docs の用語集を使ったフラッシュカード</p>
+    </section>
+    <section class="toolbar" aria-label="学習設定">
+      <div class="mode-switch" role="group" aria-label="カードの表面">
+        <button class="mode active" data-mode="definition" type="button">説明から</button>
+        <button class="mode" data-mode="term" type="button">用語から</button>
+      </div>
+      <label class="search-wrap">
+        <span class="sr-only">用語を検索</span>
+        <input id="search" type="search" placeholder="用語を検索…" autocomplete="off">
+      </label>
+    </section>
+    <section class="progress-area">
+      <div class="progress-copy"><span id="remaining">0</span> 件が未習得 <span class="dot">·</span> <span id="mastered">0</span> 件を習得</div>
+      <div class="progress-track"><div id="progress" class="progress-fill"></div></div>
+    </section>
+    <section id="study" class="study">
+      <div class="card-meta"><span id="counter">CARD</span><span id="direction">説明 → 用語</span></div>
+      <button id="flashcard" class="flashcard" type="button" aria-label="カードを裏返す">
+        <span class="card-label" id="card-label">DEFINITION</span>
+        <span class="card-content" id="card-content">読み込み中…</span>
+        <span class="flip-hint">タップして答えを見る</span>
+      </button>
+      <div class="actions">
+        <button id="unknown" class="action secondary" type="button" disabled>まだ覚えていない</button>
+        <button id="known" class="action primary" type="button" disabled>覚えた</button>
+      </div>
+      <p class="keyboard-hint">カードをタップして答えを確認</p>
+    </section>
+    <section id="empty" class="empty" hidden>
+      <h2>すべての用語を習得しました</h2>
+      <p>習得済みの用語は一覧から復習できます。</p>
+      <button id="restart" class="action primary" type="button">最初から復習する</button>
+    </section>
+    <section class="list-section">
+      <details>
+        <summary>用語一覧 <span id="total-count"></span></summary>
+        <div class="list-tools"><input id="list-search" type="search" placeholder="一覧を絞り込む…"></div>
+        <div id="term-list" class="term-list"></div>
+      </details>
+    </section>
+    <footer>
+      <p>用語・定義の出典: <a href="https://developer.mozilla.org/en-US/docs/Glossary" target="_blank" rel="noreferrer">MDN Web Docs Glossary</a></p>
+      <p>MDNの内容は各ページのライセンスに従います。<a href="./THIRD_PARTY_LICENSES.md">ライセンス情報</a></p>
+    </footer>
+  </main>
+  <dialog id="settings">
+    <form method="dialog">
+      <h2>学習設定</h2>
+      <p>「説明から」「用語から」を切り替えて、同じ用語を両方向から練習できます。</p>
+      <button class="action primary" value="close">閉じる</button>
+    </form>
+  </dialog>
+  <script src="./app.js" type="module"></script>
+</body>
+</html>
