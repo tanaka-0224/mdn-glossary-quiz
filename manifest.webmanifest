@@ -1,0 +1,10 @@
+{
+  "name": "MDN Glossary Cards",
+  "short_name": "Glossary Cards",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fa",
+  "theme_color": "#f7f8fa"
+}
