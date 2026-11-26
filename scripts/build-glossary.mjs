@@ -48,8 +48,8 @@ function firstParagraph(body, term) {
     if (!meaningful.length) continue;
     const raw = meaningful.join(" ");
     if (/^\{\{\s*[A-Za-z]+\s*\}\}$/.test(raw)) continue;
-    const boldTerm = new RegExp("\\*\\*" + escapeRegExp(term) + "\\*\\*", "g");
-    return cleanMarkdown(raw.replace(boldTerm, "これは"));
+    const boldTerm = new RegExp("\\*\\*" + escapeRegExp(term) + "\\*\\*((?:（[^）]*）|\\([^)]*\\))?)(?:とは|は)", "g");
+    return cleanMarkdown(raw.replace(boldTerm, (_, aside) => "これは" + (aside || "")));
   }
   return "";
 }
