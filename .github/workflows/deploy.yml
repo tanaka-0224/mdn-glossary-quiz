@@ -23,6 +23,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Fetch Japanese MDN glossary
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/mdn/translated-content.git /tmp/mdn-translated-content
+          git -C /tmp/mdn-translated-content sparse-checkout set files/ja/glossary
+          node scripts/build-glossary.mjs /tmp/mdn-translated-content/files/ja/glossary
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
