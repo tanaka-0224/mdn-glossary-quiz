@@ -49,7 +49,7 @@ function firstParagraph(body, term) {
     const raw = meaningful.join(" ");
     if (/^\{\{\s*[A-Za-z]+\s*\}\}$/.test(raw)) continue;
     const boldTerm = new RegExp("\\*\\*" + escapeRegExp(term) + "\\*\\*((?:（[^）]*）|\\([^)]*\\))?)(?:とは|は)", "g");
-    return cleanMarkdown(raw.replace(boldTerm, (_, aside) => "これは" + (aside || "")));
+    return cleanMarkdown(raw.replace(boldTerm, (_, aside) => aside || ""));
   }
   return "";
 }
@@ -70,8 +70,9 @@ for (const dirent of fs.readdirSync(root, { withFileTypes: true })) {
   const definition = firstParagraph(body, term);
   if (!definition) continue;
 
-  const leadingTerm = new RegExp("^" + escapeRegExp(term) + "(?=\\s*(?:とは|は|というのは|:|：))");
-  const normalizedDefinition = definition.replace(leadingTerm, "").replace(/^[\s、,:：]+/, "");
+  const leadingTerm = new RegExp("^" + escapeRegExp(term) + "(?:\\s*(?:とは|は|というのは))?\\s*[、,:：]?\\s*");
+  const withoutLeadingTerm = definition.replace(leadingTerm, "");
+  const normalizedDefinition = withoutLeadingTerm.split(term).join("（" + term + "）");
   if (!normalizedDefinition || /\{\{[^{}]*\}\}/.test(normalizedDefinition)) continue;
 
   entries.push({
