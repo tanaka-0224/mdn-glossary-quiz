@@ -72,7 +72,7 @@ for (const dirent of fs.readdirSync(root, { withFileTypes: true })) {
 
   const leadingTerm = new RegExp("^" + escapeRegExp(term) + "(?:\\s*(?:とは|は|というのは))?\\s*[、,:：]?\\s*");
   const withoutLeadingTerm = definition.replace(leadingTerm, "");
-  const normalizedDefinition = withoutLeadingTerm.split(term).join("（" + term + "）");
+  const normalizedDefinition = withoutLeadingTerm.replace(/^[\\s、,:：]+/, "").split(term).join("（" + term + "）");
   if (!normalizedDefinition || /\{\{[^{}]*\}\}/.test(normalizedDefinition)) continue;
 
   entries.push({
